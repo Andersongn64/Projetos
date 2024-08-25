@@ -1,0 +1,170 @@
+Segue abaixo como executar e implantar a aplicação. 
+
+Esta aplicação é uma API RESTful desenvolvida em Spring Boot que permite o gerenciamento de produtos e pedidos. O RabbitMQ é utilizado para processar as mudanças de status dos pedidos de forma assíncrona, enquanto o MySQL é usado para persistência de dados.
+
+Pré-requisitos
+
+Antes de começar, certifique-se de instalar os seguinte softwares:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- Conta na [AWS](https://aws.amazon.com/)
+- [AWS CLI](https://aws.amazon.com/cli/)
+- [Gradle](https://gradle.org/install/) (se você pretende construir o projeto localmente)
+
+Já eu utilizei:
+
+- [MySQL Community 8.0.39] (https://dev.mysql.com/downloads/installer/)
+- [MySQL Workbench 8.0.38] ( https://dev.mysql.com/downloads/workbench/)
+- [IntelliJ IDEA Ultimate - 30 dias gratuitos] (https://www.jetbrains.com/pt-br/idea/download/?section=windows)
+- [Docker Desktop] (https://www.docker.com/products/docker-desktop/)
+- [Erlang/OTP 27.0.1] (https://www.erlang.org/downloads)
+- [RabbitMQ 3.13.6] (https://community.chocolatey.org/packages/rabbitmq#individual)
+- [PostMan] (https://www.postman.com/downloads/)
+
+Todos os programas utilizei no Windows 11 x64.
+
+Estrutura do Projeto
+
+O projeto está organizado da seguinte forma:
+
+- src/main/java/com/example/demo1/ - Código-fonte da aplicação.
+- src/main/resources/application.properties - Configurações da aplicação.
+- Dockerfile - Para construir a imagem Docker da aplicação.
+- docker-compose.yml - Para facilitar a execução do ambiente completo (Spring Boot, RabbitMQ, MySQL).
+- build.gradle - Arquivo de configuração do Gradle.
+
+## Configurações de Banco de Dados e Mensageria
+
+### MySQL
+
+As configurações do MySQL estão definidas no arquivo application.properties:
+
+properties
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.datasource.url=jdbc:mysql://mysql-container:3306/mydatabase
+spring.datasource.username=user
+spring.datasource.password=password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+
+### RabbitMQ
+
+A fila orderStatusQueue é configurada na classe RabbitMQConfig.java:
+
+java
+@Bean
+public Queue orderStatusQueue() {
+    return new Queue("orderStatusQueue", true);
+}
+
+
+Executando a Aplicação Localmente com Docker
+
+1. *Construir o Projeto*: Caso deseje construir o .jar da aplicação localmente, execute o seguinte comando na raiz do projeto:
+
+   bash
+   ./gradlew build
+   
+
+2. *Executar com Docker Compose*:
+
+   Certifique-se de que o Docker e o Docker Compose estão instalados e funcionando. Então, execute o comando abaixo na raiz do projeto:
+
+   bash
+   docker-compose up --build
+   
+
+   Isso irá:
+
+   - Iniciar um contêiner MySQL
+   - Iniciar um contêiner RabbitMQ
+   - Construir e iniciar o contêiner da aplicação Spring Boot
+
+3. *Acessando a Aplicação*:
+
+   A aplicação estará disponível na porta 8080. Para testar, use uma ferramenta como o [Postman](https://www.postman.com/) ou curl:
+
+   bash
+   curl http://localhost:8080/products
+   
+
+Implantação na AWS
+
+Passo 1: Configuração do Banco de Dados MySQL com Amazon RDS
+
+1. *Crie uma Instância RDS MySQL*:
+
+   - Acesse o console da AWS e vá para o RDS.
+   - Crie uma nova instância de banco de dados MySQL.
+   - Anote o endpoint, usuário e senha gerados.
+
+2. *Atualize application.properties*:
+
+   Atualize o application.properties com as informações da instância RDS:
+
+   properties
+   spring.datasource.url=jdbc:mysql://<RDS_ENDPOINT>:3306/<NOME_DO_BANCO>
+   spring.datasource.username=<USUARIO>
+   spring.datasource.password=<SENHA>
+   
+
+Passo 2: Configuração do RabbitMQ
+
+1. *Crie uma Instância RabbitMQ*:
+
+   - Use o [Amazon MQ](https://aws.amazon.com/amazon-mq/) para criar uma instância RabbitMQ, ou instale e configure o RabbitMQ em uma instância EC2.
+
+   - Atualize as configurações do application.properties com as credenciais e endpoint do RabbitMQ, se necessário.
+
+Passo 3: Construir e Enviar a Imagem Docker para o Amazon ECR
+
+1. *Crie um Repositório no ECR*:
+
+   - No console da AWS, navegue para o ECR e crie um novo repositório.
+
+2. *Autentique-se no ECR*:
+
+   bash
+   aws ecr get-login-password --region <sua-regiao> | docker login --username AWS --password-stdin <sua-conta-ecr>.amazonaws.com
+   
+
+3. *Construir e Enviar a Imagem*:
+
+   bash
+   docker build -t demo1 .
+   docker tag demo1:latest <sua-conta-ecr>.amazonaws.com/demo1:latest
+   docker push <sua-conta-ecr>.amazonaws.com/demo1:latest
+   
+
+Passo 4: Implantação com Amazon ECS
+
+1. *Crie um Cluster ECS*:
+
+   - Crie um cluster no ECS e configure um serviço que use a imagem enviada ao ECR.
+
+2. *Configure as Tarefas*:
+
+   - Crie uma tarefa ECS com contêineres para a aplicação Spring Boot.
+   - Configure a VPC, sub-redes e segurança de acordo com as melhores práticas.
+
+3. *Iniciar o Serviço*:
+
+   - Inicie o serviço ECS e verifique os logs para garantir que a aplicação está rodando corretamente.
+
+Passo 5: Testando a Aplicação
+
+Use a URL pública da aplicação fornecida pelo ECS para testar as APIs usando o Postman ou curl.
+
+bash
+curl http://<ECS_PUBLIC_URL>:8080/products
+
+
+ - Ponto importante a se notar
+
+Seria bom se certifique-se de que todas as instâncias na AWS, como ECS, RDS e RabbitMQ, estão adequadamente protegidas com grupos de segurança e firewalls. Configure backups e políticas de recuperação para o banco de dados MySQL e monitore a saúde da aplicação usando os serviços de monitoramento da AWS.
+
+OBS:. Cheguei a testar todos os componentes mais de uma vez e corrigir o máximo de erros possíveis que o aplicativo teve, eu cheguei a usar o RabbitMQ e o MySQL sem problemas.
+
+Muito Obrigado, por me permitir criar esse projeto tão legal, me diverti bastante na criação dele e seria muito bom participar da equipe. Sério mesmo me contrata vai eu me esforcei tanto kkkk.
