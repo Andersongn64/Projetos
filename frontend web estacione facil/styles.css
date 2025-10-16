@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #ffffff, #f0f0f0);
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 100px;
+  margin: 0;
+}
+
+body.dark-mode {
+  background: linear-gradient(120deg, #232526 0%, #414345 100%);
+  color: #f1f1f1;
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 1rem;
+}
+
+.form-container {
+  background: #fff;
+  color: #333;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 2rem;
+}
+
+.form-container h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-container input:invalid {
+  border-color: #e74c3c;
+}
+
+.form-container input:valid {
+  border-color: #2ecc71;
+}
+
+.form-container button {
+  width: 100%;
+  padding: 0.7rem;
+  background: blue;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background: #0056b3;
+}
+
+.dark-mode .form-container {
+  background: #232526;
+  color: #f1f1f1;
+}
+
+.dark-mode .form-container input,
+.dark-mode .form-container button {
+  background: #181c22;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+.dark-mode .form-container button:hover {
+  background: #333;
+}
+
+.recaptcha-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.download-section {
+  text-align: center;
+}
+
+.download-section p {
+  margin-bottom: 0.5rem;
+}
+
+.download-section a {
+  display: inline-block;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgb(255, 115, 0);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.download-section a:hover {
+  background: #e0e0e0;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.dark-mode .download-section a:hover {
+  background: #333;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+}
+
+#mensagem {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+footer {
+  background-color: white;
+  color: white;
+  text-align: center;
+  padding: 15px 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 14px;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+}
+
+.dark-mode footer {
+  background: #181c22;
+  color: #eee;
+}
+
+.sucesso {
+  color: green;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+.erro {
+  color: red;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.form-container a {
+  font-weight: bold;
+  color: #0072ff;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.dark-mode .form-container a {
+  color: #00c6ff;
+}
+
+@media (max-width: 500px) {
+  .form-container {
+    padding: 1rem;
+    max-width: 98vw;
+  }
+  .logo {
+    width: 90px;
+  }
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Área do Usuário - Estacione Fácil</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #e3f0ff, #f0f4ff);
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #1565c0;
+      color: #fff;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(21,101,192,0.08);
+      padding: 2rem;
+    }
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
+    }
+    .filtros label {
+      font-weight: bold;
+      color: #1565c0;
+    }
+    .filtros input, .filtros select {
+      padding: 0.5rem;
+      border: 1px solid #b3c6e0;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .filtros input:focus, .filtros select:focus {
+      border-color: #ff9800;
+    }
+    .filtros button {
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: bold;
+    }
+    .filtros button:hover {
+      background: #e65100;
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      border: 2px solid #1565c0;
+    }
+    #lista-estacionamentos {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #lista-estacionamentos li {
+      background: #e3f0ff;
+      margin-bottom: 0.7rem;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      border-left: 5px solid #ff9800;
+      font-size: 1.05rem;
+      box-shadow: 0 1px 4px rgba(21,101,192,0.05);
+    }
+    .sair-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #fff;
+      background: #1565c0;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .sair-link:hover {
+      background: #ff9800;
+      color: #fff;
+    }
+  </style>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <header>Bem-vindo à sua área - Estacione Fácil</header>
+  <div class="container">
+    <form class="filtros" onsubmit="event.preventDefault(); buscarEstacionamentos();">
+      <div>
+        <label for="pesquisa">Pesquisar:</label><br>
+        <input type="text" id="pesquisa" placeholder="Nome ou endereço">
+      </div>
+      <div>
+        <label for="tipo">Tipo:</label><br>
+        <select id="tipo">
+          <option value="">Todos</option>
+          <option value="shopping">Shopping</option>
+          <option value="rua">Rua</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div>
+        <label for="localidade">Localidade:</label><br>
+        <input type="text" id="localidade" placeholder="Cidade ou bairro">
+      </div>
+      <div>
+        <button type="submit">Buscar</button>
+      </div>
+    </form>
+    <div id="map"></div>
+    <ul id="lista-estacionamentos"></ul>
+    <a href="index.html" class="sair-link">Sair</a>
+  </div>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    let map, userMarker, estacionamentoMarkers = [];
+
+    function initMap(lat, lng) {
+      if (map) {
+        map.setView([lat, lng], 15);
+        if (userMarker) userMarker.setLatLng([lat, lng]);
+        else userMarker = L.marker([lat, lng]).addTo(map).bindPopup("Você está aqui").openPopup();
+        return;
+      }
+      map = L.map('map').setView([lat, lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+      userMarker = L.marker([lat, lng]).addTo(map).bindPopup("Você está aqui").openPopup();
+    }
+
+    async function buscarEstacionamentos() {
+      let lat = -23.55052, lng = -46.633308; // padrão: São Paulo
+      if (navigator.geolocation) {
+        try {
+          const pos = await new Promise((resolve, reject) =>
+            navigator.geolocation.getCurrentPosition(resolve, reject)
+          );
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        } catch (e) {}
+      }
+      initMap(lat, lng);
+
+      // Filtros
+      const tipo = document.getElementById('tipo').value;
+      const pesquisa = document.getElementById('pesquisa').value.trim();
+      const localidade = document.getElementById('localidade').value.trim();
+
+      // Monta query string
+      let url = `http://localhost:3000/api/vagas-proximas?lat=${lat}&lng=${lng}&raio=2000`;
+      if (tipo) url += `&tipo=${encodeURIComponent(tipo)}`;
+      // Pesquisa e localidade são apenas para filtro visual, não para a API (a menos que você implemente no backend)
+
+      const resposta = await fetch(url);
+      let estacionamentos = await resposta.json();
+
+      // Filtro visual por nome/endereço/localidade
+      if (pesquisa) {
+        estacionamentos = estacionamentos.filter(est =>
+          est.nome.toLowerCase().includes(pesquisa.toLowerCase())
+        );
+      }
+      if (localidade) {
+        estacionamentos = estacionamentos.filter(est =>
+          (est.endereco || '').toLowerCase().includes(localidade.toLowerCase())
+        );
+      }
+
+      // Limpar marcadores antigos
+      estacionamentoMarkers.forEach(m => map.removeLayer(m));
+      estacionamentoMarkers = [];
+
+      // Adicionar marcadores no mapa
+      estacionamentos.forEach(est => {
+        const marker = L.marker([parseFloat(est.latitude), parseFloat(est.longitude)])
+          .addTo(map)
+          .bindPopup(`<b>${est.nome}</b><br>${est.tipo}<br>R$${est.preco}`);
+        estacionamentoMarkers.push(marker);
+      });
+
+      // Listar estacionamentos
+      const lista = document.getElementById('lista-estacionamentos');
+      lista.innerHTML = '';
+      estacionamentos.forEach(est => {
+        const li = document.createElement('li');
+        li.textContent = `${est.nome} - ${est.tipo} - R$${est.preco}`;
+        lista.appendChild(li);
+      });
+    }
+
+    // Inicializa o mapa na posição do usuário ao carregar a página
+    window.onload = function() {
+      buscarEstacionamentos();
+    };
+  </script>
+</body>
+</html>

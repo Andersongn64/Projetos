@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estacione Fácil</title>
+  <!-- Adicione o Font Awesome para ícones modernos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    * {
+      box-sizing: border-box;
+      transition: background 0.3s, color 0.3s, border 0.3s;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #ffffff, #f0f0f0);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 40px;
+      padding-bottom: 100px;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(120deg, #232526 0%, #414345 100%);
+      color: #f1f1f1;
+    }
+
+    img {
+      width: 150px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 10px #0003);
+      transition: filter 0.3s;
+    }
+
+    .logo-modern {
+      font-size: 80px;
+      color: #0072ff;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 10px #0072ff33);
+      transition: filter 0.3s;
+    }
+
+    .dark-mode .logo-modern {
+      color: #00c6ff;
+      filter: drop-shadow(0 0 10px #00c6ff55);
+    }
+
+    .form-container {
+      background: #fff;
+      color: #333;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+      width: 90%;
+      max-width: 350px;
+      margin-bottom: 2rem;
+      transition: background 0.4s, color 0.4s, box-shadow 0.4s;
+    }
+
+    .dark-mode .form-container {
+      background: #23272f;
+      color: #f1f1f1;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    }
+
+    .form-container h2 {
+      margin-bottom: 1rem;
+      text-align: center;
+      color: inherit;
+    }
+
+    .form-container label {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      display: block;
+      color: inherit;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+      color: #222;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s, border 0.3s;
+    }
+
+    .dark-mode .form-container input {
+      background: #2c2f36;
+      color: #f1f1f1;
+      border: 1px solid #444;
+    }
+
+    .form-container input:invalid {
+      border-color: #e74c3c;
+    }
+    .form-container input:valid {
+      border-color: #2ecc71;
+    }
+
+    .form-container button {
+      width: 100%;
+      padding: 0.8rem;
+      background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode .form-container button {
+      background: linear-gradient(90deg, #232526 0%, #414345 100%);
+      color: #fff;
+    }
+
+    .form-container button:hover {
+      background: linear-gradient(90deg, #0056b3 0%, #0072ff 100%);
+    }
+
+    .dark-mode .form-container button:hover {
+      background: linear-gradient(90deg, #414345 0%, #232526 100%);
+    }
+
+    .recaptcha-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    #toggle-dark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #23272f;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.5rem 1.2rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #toggle-dark:hover {
+      background: #0072ff;
+      color: #fff;
+    }
+
+    .dark-mode #toggle-dark {
+      background: #f1f1f1;
+      color: #23272f;
+    }
+
+    .dark-mode #toggle-dark:hover {
+      background: #00c6ff;
+      color: #23272f;
+    }
+
+    #mensagem {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    footer {
+      background-color: #004aad;
+      color: white;
+      text-align: center;
+      padding: 15px 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 14px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+      transition: background 0.4s, color 0.4s;
+    }
+
+    .dark-mode footer {
+      background: #181c22;
+      color: #eee;
+    }
+
+    .sucesso {
+      color: green;
+      font-weight: bold;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .erro {
+      color: red;
+      font-weight: bold;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .form-container a {
+      font-weight: bold;
+      color: #0072ff;
+      text-decoration: underline;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .dark-mode .form-container a {
+      color: #00c6ff;
+    }
+
+    @media (max-width: 500px) {
+      .form-container {
+        padding: 1rem;
+        max-width: 98vw;
+      }
+      .logo-modern {
+        font-size: 48px;
+      }
+    }
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <button id="toggle-dark" style="position: absolute; top: 10px; right: 10px;">🌙 Modo Noturno</button>
+  <div class="logo-modern">
+    <i class="fa-solid fa-square-parking"></i>
+  </div>
+
+  <!-- Formulário de Login -->
+  <div class="form-container" id="login-form" style="display: none;">
+    <h2>Login</h2>
+    <label for="login-email">E-mail ou Usuário</label>
+    <input type="text" id="login-email" placeholder="E-mail ou Usuário" required />
+    <label for="login-senha">Senha</label>
+    <input type="password" id="login-senha" placeholder="Senha" required />
+    <button onclick="loginUsuario()">Entrar</button>
+    <p id="login-mensagem"></p>
+    <p style="text-align:center;">
+      <a href="#" onclick="mostrarCadastro();return false;">Não tem conta? Cadastre-se</a>
+    </p>
+  </div>
+
+  <!-- Formulário de Cadastro -->
+  <div class="form-container" id="cadastro-form">
+    <h2>Cadastro</h2>
+    <label for="nome">Nome completo</label>
+    <input type="text" id="nome" placeholder="Nome completo" required />
+    <label for="email">E-mail</label>
+    <input type="email" id="email" placeholder="E-mail" required />
+    <label for="usuario">Usuário</label>
+    <input type="text" id="usuario" placeholder="Escolha um nome de usuário" required autocomplete="username" />
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" placeholder="Senha" required />
+    <label for="confirmarSenha">Confirmar Senha</label>
+    <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required />
+    <!-- <div class="recaptcha-wrapper">
+      <div class="g-recaptcha" data-sitekey="SUA_SITE_KEY_AQUI"></div>
+    </div> -->
+    <button onclick="registrarUsuario()">Cadastrar</button>
+    <p id="mensagem"></p>
+    <p style="text-align:center;">
+      <a href="#" onclick="mostrarLogin();return false;">Já tem conta? Entrar</a>
+    </p>
+  </div>
+
+  <div id="spinner" style="display:none; text-align:center; margin: 1rem 0;">
+    <i class="fa fa-spinner fa-spin" style="font-size:2rem; color:#0072ff;"></i>
+  </div>
+
+  <footer>
+    © 2025 Estacione Fácil - Todos os direitos reservados | Contato: suporte@estacionefacil.com.br
+  </footer>
+
+  <script>
+    // Alternar entre login e cadastro
+    function mostrarLogin() {
+      document.getElementById('cadastro-form').style.display = 'none';
+      document.getElementById('login-form').style.display = '';
+    }
+    function mostrarCadastro() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('cadastro-form').style.display = '';
+    }
+
+    // Botão para alternar modo noturno
+    document.getElementById('toggle-dark').onclick = function() {
+      document.body.classList.toggle('dark-mode');
+    };
+
+    // Função de login
+    async function loginUsuario() {
+      const email = document.getElementById('login-email').value;
+      const senha = document.getElementById('login-senha').value;
+      const mensagem = document.getElementById('login-mensagem');
+      const btn = document.querySelector('#login-form button');
+      const spinner = document.getElementById('spinner');
+      mensagem.textContent = '';
+      mensagem.className = '';
+      if (!email || !senha) {
+        mensagem.textContent = 'Preencha todos os campos.';
+        mensagem.className = 'erro';
+        return;
+      }
+      btn.disabled = true;
+      spinner.style.display = '';
+      fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.sucesso) {
+          // Redireciona para a dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Mostra mensagem de erro
+          mensagem.textContent = data.erro || 'E-mail ou senha inválidos.';
+          mensagem.className = 'erro';
+        }
+      })
+      .catch(error => {
+        mensagem.textContent = 'Erro ao conectar com o servidor.';
+        mensagem.className = 'erro';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+      });
+    }
+
+    async function registrarUsuario() {
+      const nome = document.getElementById('nome').value;
+      const usuario = document.getElementById('usuario').value;
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+      const confirmarSenha = document.getElementById('confirmarSenha').value;
+      const mensagem = document.getElementById('mensagem');
+      const btn = document.querySelector('#cadastro-form button');
+      const spinner = document.getElementById('spinner');
+      // const captchaResponse = grecaptcha.getResponse(); // Remova esta linha
+
+      mensagem.textContent = '';
+      mensagem.className = '';
+
+      // if (!captchaResponse) {
+      //   mensagem.textContent = 'Por favor, confirme que você não é um robô.';
+      //   mensagem.className = 'erro';
+      //   return;
+      // }
+
+      if (senha !== confirmarSenha) {
+        mensagem.textContent = 'As senhas não coincidem.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      // Validação de senha forte (opcional)
+      if (senha.length < 8 || !/\d/.test(senha) || !/[A-Za-z]/.test(senha)) {
+        mensagem.textContent = 'A senha deve ter pelo menos 8 caracteres, letras e números.';
+        mensagem.className = 'erro';
+        return;
+      }
+
+      btn.disabled = true;
+      spinner.style.display = '';
+      try {
+        const response = await fetch('http://localhost:3000/api/usuarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nome, usuario, email, senha }) // Remova o campo captcha
+        });
+
+        const data = await response.json();
+
+        if (data.sucesso) {
+          mensagem.textContent = data.mensagem;
+          mensagem.className = 'sucesso';
+          // grecaptcha.reset(); // Remova esta linhalinha
+          // Limpe os campos se quiser
+        } else {
+          mensagem.textContent = data.erro || 'Erro ao registrar.';
+          mensagem.className = 'erro';
+        }
+      } catch (error) {
+        mensagem.textContent = 'Erro ao conectar com o servidor.';
+        mensagem.className = 'erro';
+      }
+      btn.disabled = false;
+      spinner.style.display = 'none';
+    }
+
+    document.getElementById('nome').addEventListener('input', function() {
+      const nome = this.value.trim().toLowerCase();
+      if (nome.length > 0) {
+        // Sugestão: primeira palavra + última palavra (sem acentos/espaços)
+        let sugestao = nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(' ');
+        if (sugestao.length > 1) {
+          sugestao = sugestao[0] + '.' + sugestao[sugestao.length - 1];
+        } else {
+          sugestao = sugestao[0];
+        }
+        document.getElementById('usuario').value = sugestao.replace(/[^a-z0-9.]/g, '');
+      }
+    });
+
+    async function buscarEnderecoPorCoordenadas(lat, lng) {
+      const apiKey = 'SUA_GOOGLE_MAPS_API_KEY';
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+      const resposta = await fetch(url);
+      const dados = await resposta.json();
+      if (dados.results && dados.results.length > 0) {
+        return dados.results[0].formatted_address;
+      }
+      return null;
+    }
+
+    async function buscarEnderecoPorCEP(cep) {
+      const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const dados = await resposta.json();
+      if (!dados.erro) {
+        return dados;
+      }
+      return null;
+    }
+
+    async function buscarClima(lat, lng) {
+      const apiKey = 'SUA_OPENWEATHER_API_KEY';
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&lang=pt_br&units=metric`;
+      const resposta = await fetch(url);
+      const dados = await resposta.json();
+      return dados;
+    }
+  </script>
+</body>
+</html>
